@@ -84,3 +84,37 @@ def bandpower(x, fs, fmin, fmax):
     delta_power = simps(psd[idx_delta], dx=freq_res, axis=0)
     
     return delta_power
+
+def BandPower(X, fs, fmin, fmax):
+    band_feature = []
+    for x in X:
+        fs = 1000
+        # win = 4 * sf
+        freqs, psd = sig.welch(x, fs, axis=0, nperseg=x.shape[0])
+        
+        # Define delta lower and upper limits
+        # fmin, fmax = 0.5, 4
+
+        # Find intersecting values in frequency vector
+        idx_delta = np.logical_and(freqs >= fmin, freqs <= fmax)
+        
+        from scipy.integrate import simps
+
+        # Frequency resolution
+        freq_res = freqs[1] - freqs[0]  # = 1 / 4 = 0.25
+
+        # Compute the absolute power by approximating the area under the curve
+        delta_power = simps(psd[idx_delta], dx=freq_res, axis=0)
+        band_feature.append(delta_power)
+    return np.vstack(band_feature)
+
+def pack_submission(prediction_1, prediction_2, prediction_3):
+    prediction_1 = np.insert(np.repeat(prediction_1, 50, axis=0), -1, [prediction_1[-1]]*50 , axis=0)
+    prediction_2 = np.insert(np.repeat(prediction_2, 50, axis=0), -1, [prediction_2[-1]]*50 , axis=0)
+    prediction_3 = np.insert(np.repeat(prediction_3, 50, axis=0), -1, [prediction_3[-1]]*50 , axis=0)
+
+    prediction_1 = np.insert(prediction_1, 3, 0, axis=1)
+    prediction_2 = np.insert(prediction_2, 3, 0, axis=1)
+    prediction_3 = np.insert(prediction_3, 3, 0, axis=1)
+    
+    scipy.io.savemat('leaderboard_prediction.mat', {'predicted_dg': [[prediction_1], [prediction_2], [prediction_3]]})
