@@ -12,6 +12,11 @@ def correlation(prediction, target):
     corr = [pearsonr(prediction[:,i], target[:,i]).statistic for i in range(4)]
     return corr, np.mean(corr)
 
+def correlation_dl(prediction, target):
+    """Caluclate the correlation coefficient between prediction and target"""
+    corr = [pearsonr(prediction[:,i], target[:,i])[0] for i in range(4)]
+    return corr, np.mean(corr)
+
 def filter_data(raw_eeg, fs=1000):
     """
     Write a filter function to clean underlying data.
