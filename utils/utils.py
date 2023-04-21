@@ -18,7 +18,9 @@ def correlation_dl(prediction, target):
     corr = [pearsonr(prediction[:,i], target[:,i])[0] for i in range(4)]
     return corr, np.mean(corr)
 
-def pack_submission(prediction_1, prediction_2, prediction_3):
+def pack_submission(predictions, output_file:str, output_variable:str):
+    (prediction_1, prediction_2, prediction_3) = predictions
+
     prediction_1 = np.insert(np.repeat(prediction_1, 50, axis=0), -1, [prediction_1[-1]]*50 , axis=0)
     prediction_2 = np.insert(np.repeat(prediction_2, 50, axis=0), -1, [prediction_2[-1]]*50 , axis=0)
     prediction_3 = np.insert(np.repeat(prediction_3, 50, axis=0), -1, [prediction_3[-1]]*50 , axis=0)
@@ -27,7 +29,7 @@ def pack_submission(prediction_1, prediction_2, prediction_3):
     prediction_2 = np.insert(prediction_2, 3, 0, axis=1)
     prediction_3 = np.insert(prediction_3, 3, 0, axis=1)
     
-    scipy.io.savemat('leaderboard_prediction.mat', {'predicted_dg': [[prediction_1], [prediction_2], [prediction_3]]})
+    scipy.io.savemat(output_file, {output_variable: [[prediction_1], [prediction_2], [prediction_3]]})
     
 def filter_data(raw_eeg, fs=1000):
     """
@@ -147,20 +149,7 @@ def get_features(filtered_window, fs=1000):
     feat_Hijorth = hjorth_complexity(filtered_window)
     feat_kurtosis = Kurtosis(filtered_window)
     feat_covariance = Covariance(filtered_window)
-    # feat_FreqAvg = averageFreqDomain(filtered_window)
-    
-    from pyriemann.estimation import Covariances
-    from pyriemann.tangentspace import TangentSpace
-    
-    # covar = Covariances().fit_transform(np.expand_dims(filtered_window.T, 0))
-    # # covest = Covariances('oas')
-    # # temp = np.expand_dims(filtered_window, axis=-1)
-    # # covar = covest.fit_transform(temp)
-    # ts = TangentSpace()
-    # tsfeat = ts.fit_transform(covar)
-    # # print(tsfeat.shape)
 
-    # raise notImplementedError()
     return np.hstack([feat_LL, 
                       feat_Area, 
                     #   feat_covariance,
