@@ -3,7 +3,10 @@ import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
 import numpy as np
 
-device = torch.device(0)
+if torch.cuda.is_available():
+    device = torch.device(0)
+else:
+    device = torch.device("cpu")
 
 class FingerRegressor(nn.Module):
     def __init__(self, num_features, num_fingers) -> None:
