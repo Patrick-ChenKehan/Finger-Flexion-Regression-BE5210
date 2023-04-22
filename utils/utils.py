@@ -1,4 +1,4 @@
-#Set up the notebook environment
+"""Utility functions for the algorithm"""
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -19,6 +19,7 @@ def correlation_dl(prediction, target):
     return corr, np.mean(corr)
 
 def pack_submission(predictions, output_file:str, output_variable:str):
+    """Pack up prediction to a submission file"""
     (prediction_1, prediction_2, prediction_3) = predictions
 
     prediction_1 = np.insert(np.repeat(prediction_1, 50, axis=0), -1, [prediction_1[-1]]*50 , axis=0)
@@ -52,30 +53,31 @@ def filter_data(raw_eeg, fs=1000):
     return filtered_eeg
 
 def NumWins(x, fs, winLen, winDisp):
+    """Calculate the number of windows under winLen and winDisp"""
     return int(1 + (x.shape[0] - winLen * fs) / (winDisp * fs))
 
 def LineLength(x):
+    """Calculate the line length of the signal"""
     return np.abs(np.diff(x, axis=0)).sum(axis=0)
 
 def Area(x):
+    """Calculate the area under the curve"""
     return np.abs(x).sum(axis=0)
 
 def Energy(x):
+    """Calculate the energy of the signal"""
     return (x ** 2).sum(axis=0)
 
 def ZeroCrossingMean(x):
+    """Calculate the zero crossing mean"""
     return ((x < x.mean(axis=0))[1:] & (x[:-1] > x.mean(axis=0)) | (x > x.mean(axis=0))[1:] & (x[:-1] < x.mean(axis=0))).sum(axis=0)
 
-def numSpikes(x):
-    #TODO: implement
-    sig.find_peaks(x, height=0, distance=100)
-    pass
-
 def averageTimeDomain(x):
-    #TODO: implement
+    """Calculate the average of the time domain signal"""
     return np.mean(x, axis=0)
 
 def bandpower(x, fs, fmin, fmax):
+    """Compute the average power of the signal x in a specific frequency band."""
     fs = 1000
     # win = 4 * sf
     freqs, psd = sig.welch(x, fs, axis=0, nperseg=x.shape[0])
@@ -97,6 +99,7 @@ def bandpower(x, fs, fmin, fmax):
     return delta_power
 
 def spectral_entropy(x, fs=1000):
+    """Calculate the spectral entropy of a window"""
     # Calculate the power spectrum
     f, Pxx = sig.welch(x, fs=fs)
     # Normalize the power spectrum
@@ -106,6 +109,7 @@ def spectral_entropy(x, fs=1000):
     return se
 
 def hjorth_complexity(x):
+    """Generate Hjorth complexity features"""
     dx = np.diff(x)
     d2x = np.diff(dx)
     var_x = np.var(x)
@@ -117,11 +121,19 @@ def hjorth_complexity(x):
     complexity = mobility / activity
     return complexity
     
-# Kurtosis = @(x) ((1/size(x,1))*sum((x - mean(x)).^4))./(((1/size(x,1))*sum((x - mean(x)).^2)).^2);
 def Kurtosis(x):
+    """Calculate kurtosis of a window"""
     return ((1/x.shape[0])*np.sum((x - np.mean(x))**4))/(((1/x.shape[0])*np.sum((x - np.mean(x))**2))**2)
 
 def Covariance(x):
+    """Generate convariance features
+
+    Args:
+        x (_type_): filtered window
+
+    Returns:
+        covariance_feat: reshaped upper half of covariance matrix
+    """
     convar = np.cov(x, rowvar=False)
     feat = []
     for i in range(convar.shape[0]):
@@ -220,10 +232,27 @@ def create_R_matrix(features, N_wind):
 
     return R
     
-def feature_selection(R_train, y_train, num_features):
+def feature_selection(R, y, num_features):
+    """
+    Select features with the top num_features//4 correlation to each
+    
+    
+    Input:
+        R: R_matrix
+        y: data_glove data of 4 fingers
+    Output:
+        R (samples x (number of selected features))
+    """
+    # Define selectors for each finger
     selectors = [SelectKBest(f_regression, k=num_features//4) for _ in range(4)]
+    
+    # Fit the selectors
     for i in range(4):
-        selectors[i].fit(R_train, y_train[:, i])
+        selectors[i].fit(R, y[:, i])
+        
+    # Get the indices of the selected features
     idxs = [selector.get_support(indices=True) for selector in selectors]
+    
+    # Union and the indices
     indices = np.unique(np.concatenate(idxs))
     return indices
