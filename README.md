@@ -21,9 +21,8 @@
   * `train_std_S{Subject_id}.npy`: saved std of training data
 * `train.ipynb`: training code of XGB Regressor and LightGBM Regressor
 * `test.ipynb`: code to predict leaderboard data
-* `Submit.ipynb`: code to predict hidden test data on colab.
+* `truetest_prediction.ipynb`: code to predict hidden test data on colab.
 
 ## Usage
-
 
 ## Workflow
