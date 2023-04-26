@@ -132,3 +132,4 @@ datasets/*
 */.DS_STORE
 .DS_STORE
 */.ipynb_checkpoints
+train_local.ipynb
