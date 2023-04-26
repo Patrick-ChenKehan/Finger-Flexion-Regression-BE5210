@@ -7,8 +7,8 @@
 | Name        | Email                   |
 | ----------- | ----------------------- |
 | Kehan Chen  | chenkh@seas.upenn.edu   |
-| Yining Guo  | yuetongh@seas.upenn.edu |
-| Yuetong Hao | gyn@seas.upenn.edu      |
+| Yining Guo  | gyn@seas.upenn.edu      |
+| Yuetong Hao | yuetongh@seas.upenn.edu |
 
 ## Files
 
