@@ -30,3 +30,4 @@
 * `Algorithm_MONITR.zip`: zipped `utils/` and `models/`
 
 ## Workflow
+![Flowchart Template](https://user-images.githubusercontent.com/65293070/235011790-d7ead72a-d0ac-4412-a85c-d0f488154dfb.jpg)
